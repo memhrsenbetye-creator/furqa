@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FURQAN Academy - Student Management System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Dashboard Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                            dark: '#0f172a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbars & smooth transitions */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <header id="public-header" class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Brand Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('home')">
+                    <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30 transform hover:scale-105 transition-all">
+                        <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold bg-gradient-to-r from-blue-700 to-indigo-600 bg-clip-text text-transparent block">Excellence Academy</span>
+                        <span class="text-xs text-slate-500 font-medium">Empowering Future Leaders</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <button onclick="navigateTo('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all">Home</button>
+                    <button onclick="navigateTo('about')" id="nav-about" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:text-blue-600 hover:bg-slate-100">About Us</button>
+                    <button onclick="navigateTo('gallery')" id="nav-gallery" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:text-blue-600 hover:bg-slate-100">Gallery</button>
+                    <button onclick="navigateTo('contact')" id="nav-contact" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:text-blue-600 hover:bg-slate-100">Contact</button>
+                </nav>
+
+                <!-- Auth Action Button -->
+                <div class="hidden md:flex items-center space-x-3">
+                    <button onclick="navigateTo('login')" class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/30">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span>Portal Login</span>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white px-4 pt-2 pb-4 space-y-2">
+            <button onclick="navigateTo('home'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Home</button>
+            <button onclick="navigateTo('about'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">About Us</button>
+            <button onclick="navigateTo('gallery'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Gallery</button>
+            <button onclick="navigateTo('contact'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Contact</button>
+            <button onclick="navigateTo('login'); toggleMobileMenu();" class="block w-full text-center bg-blue-600 text-white py-2.5 rounded-xl text-base font-semibold shadow-md">Portal Login</button>
+        </div>
+    </header>
+
+    <!-- MAIN PAGE CONTAINER -->
+    <main class="flex-grow">
+
+        <!-- 1. HOME PAGE VIEW -->
+        <div id="page-home" class="page-view fade-in">
+            <!-- Hero Banner with Video & Call to Action -->
+            <section class="relative bg-gradient-to-b from-blue-900 via-indigo-900 to-slate-900 text-white py-20 lg:py-28 overflow-hidden">
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30 mb-6">
+                                <i class="fa-solid fa-sparkles text-amber-400"></i> Admissions Open for Academic Year 2026-2027
+                            </span>
+                            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mb-6">
+                                Shaping Leaders for <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Tomorrow's World</span>
+                            </h1>
+                            <p class="text-lg text-slate-300 mb-8 leading-relaxed">
+                                Welcome to Excellence Academy. We combine holistic character development with world-class academic rigor and modern technological tools to give every child a brighter future.
+                            </p>
+                            <div class="flex flex-wrap gap-4">
+                                <button onclick="navigateTo('gallery')" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3.5 rounded-xl shadow-lg shadow-blue-600/30 transition-all flex items-center gap-2">
+                                    <span>Explore Campus</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                                <button onclick="navigateTo('contact')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold px-6 py-3.5 rounded-xl transition-all flex items-center gap-2">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                    <span>Inquire Now</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Featured Advertising / Promotional Video Player -->
+                        <div class="relative group rounded-3xl overflow-hidden shadow-2xl border border-slate-700/50 bg-slate-950">
+                            <div class="aspect-video relative flex items-center justify-center">
+                                <video id="promoVideo" class="w-full h-full object-cover" poster="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80">
+                                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                                    Your browser does not support video tag.
+                                </video>
+                                <div id="videoOverlay" class="absolute inset-0 bg-slate-900/40 flex flex-col items-center justify-center transition-all group-hover:bg-slate-900/20">
+                                    <button onclick="toggleVideoPlay()" class="w-20 h-20 bg-blue-600/90 hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow-2xl backdrop-blur-sm transform hover:scale-110 transition-all">
+                                        <i id="playIcon" class="fa-solid fa-play text-2xl ml-1"></i>
+                                    </button>
+                                    <p class="text-white text-sm font-semibold mt-4 bg-slate-900/80 px-4 py-1.5 rounded-full border border-white/10">Watch Campus Life Advert (1:30 min)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Highlights / Stats Showcase -->
+            <section class="py-16 bg-white border-b border-slate-200">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                        <div class="p-4">
+                            <div class="text-3xl lg:text-4xl font-extrabold text-blue-600 mb-1">100%</div>
+                            <div class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Pass Rate</div>
+                        </div>
+                        <div class="p-4">
+                            <div class="text-3xl lg:text-4xl font-extrabold text-blue-600 mb-1">25+</div>
+                            <div class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Extracurriculars</div>
+                        </div>
+                        <div class="p-4">
+                            <div class="text-3xl lg:text-4xl font-extrabold text-blue-600 mb-1">1:12</div>
+                            <div class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Teacher Ratio</div>
+                        </div>
+                        <div class="p-4">
+                            <div class="text-3xl lg:text-4xl font-extrabold text-blue-600 mb-1">15k+</div>
+                            <div class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Alumni Worldwide</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Cards -->
+            <section class="py-20 bg-slate-50">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <h2 class="text-3xl font-bold text-slate-900 sm:text-4xl">Why Choose Excellence Academy?</h2>
+                        <p class="mt-4 text-slate-600 text-lg">We offer an unmatched educational ecosystem that nurtures critical thinking, global citizenship, and creative innovation.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-xl transition-all">
+                            <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                                <i class="fa-solid fa-laptop-code"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-3">Modern Digital Classrooms</h3>
+                            <p class="text-slate-600 leading-relaxed">Equipped with interactive smartboards, modern STEM labs, and integrated cloud management tools for interactive learning.</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-xl transition-all">
+                            <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-3">Certified Educator Team</h3>
+                            <p class="text-slate-600 leading-relaxed">Our passionate teachers are globally certified experts dedicated to individual student success and mentorship.</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-xl transition-all">
+                            <div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                                <i class="fa-solid fa-microscope"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-3">State-of-the-Art Science Labs</h3>
+                            <p class="text-slate-600 leading-relaxed">Fostering hands-on practical experience through specialized Physics, Chemistry, Robotics, and Biology research centers.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 2. ABOUT PAGE VIEW -->
+        <div id="page-about" class="page-view hidden fade-in">
+            <div class="bg-slate-900 text-white py-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 class="text-4xl font-extrabold tracking-tight">About Excellence Academy</h1>
+                    <p class="mt-4 text-slate-400 text-lg max-w-2xl mx-auto">Discover our history, mission, leadership, and unwavering commitment to academic excellence.</p>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <!-- Mission & Vision -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
+                    <div>
+                        <span class="text-sm font-bold tracking-wider text-blue-600 uppercase">Our Core Purpose</span>
+                        <h2 class="text-3xl font-bold text-slate-900 mt-2 mb-6">Empowering minds, building character, inspiring futures</h2>
+                        <p class="text-slate-600 leading-relaxed mb-4">Founded in 1998, Excellence Academy has grown into a premier institution recognized for academic distinction, athletics achievement, and innovative STEAM initiatives.</p>
+                        <p class="text-slate-600 leading-relaxed mb-6">Our mission is to foster an inclusive, supportive, and challenging environment where diverse students discover their passions and prepare for meaningful societal leadership.</p>
+                        <div class="flex items-center gap-4">
+                            <div class="border-l-4 border-blue-600 pl-4 py-1">
+                                <p class="font-semibold text-slate-900">Dr. Melaku Tadesse</p>
+                                <p class="text-xs text-slate-500">Principal & Academic Director</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rounded-3xl overflow-hidden shadow-xl border border-slate-200">
+                        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1000&q=80" alt="Students in Classroom" class="w-full h-auto object-cover">
+                    </div>
+                </div>
+
+                <!-- Academic Pillars -->
+                <div class="bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
+                    <h3 class="text-2xl font-bold text-slate-900 text-center mb-10">Our Pillars of Growth</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="p-6 rounded-2xl bg-slate-50">
+                            <div class="text-blue-600 text-2xl mb-3"><i class="fa-solid fa-book-open"></i></div>
+                            <h4 class="font-bold text-lg text-slate-900 mb-2">Academic Excellence</h4>
+                            <p class="text-slate-600 text-sm">Rigorous curricula integrated with global standards, preparing students for premier university admissions.</p>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-slate-50">
+                            <div class="text-emerald-600 text-2xl mb-3"><i class="fa-solid fa-heart"></i></div>
+                            <h4 class="font-bold text-lg text-slate-900 mb-2">Character Development</h4>
+                            <p class="text-slate-600 text-sm">Inculcating integrity, compassion, responsibility, and civic duty across every grade level.</p>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-slate-50">
+                            <div class="text-purple-600 text-2xl mb-3"><i class="fa-solid fa-futbol"></i></div>
+                            <h4 class="font-bold text-lg text-slate-900 mb-2">Sports & Arts</h4>
+                            <p class="text-slate-600 text-sm">Comprehensive athletics programs, music academies, and visual arts studios for well-rounded expression.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. GALLERY PAGE VIEW -->
+        <div id="page-gallery" class="page-view hidden fade-in">
+            <div class="bg-slate-900 text-white py-12">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 class="text-4xl font-extrabold tracking-tight">Campus Gallery</h1>
+                    <p class="mt-2 text-slate-400 text-lg">Explore campus life, modern facilities, sports tournaments, and student achievements.</p>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <!-- Filter Tabs -->
+                <div class="flex flex-wrap justify-center gap-2 mb-10">
+                    <button onclick="filterGallery('all')" class="gallery-filter-btn px-5 py-2 rounded-full text-sm font-semibold bg-blue-600 text-white transition-all">All Photos</button>
+                    <button onclick="filterGallery('campus')" class="gallery-filter-btn px-5 py-2 rounded-full text-sm font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition-all">Campus & Facilities</button>
+                    <button onclick="filterGallery('class')" class="gallery-filter-btn px-5 py-2 rounded-full text-sm font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition-all">Classes & Science</button>
+                    <button onclick="filterGallery('sports')" class="gallery-filter-btn px-5 py-2 rounded-full text-sm font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition-all">Sports & Events</button>
+                </div>
+
+                <!-- Gallery Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="gallery-item campus group relative rounded-2xl overflow-hidden shadow-md bg-white border border-slate-200 transition-all hover:-translate-y-1 hover:shadow-xl">
+                        <img src="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=800&q=80" alt="Main School Campus" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="p-4 bg-white">
+                            <h4 class="font-bold text-slate-900">Main Academic Quad</h4>
+                            <p class="text-xs text-slate-500">Central Campus Grounds</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item class group relative rounded-2xl overflow-hidden shadow-md bg-white border border-slate-200 transition-all hover:-translate-y-1 hover:shadow-xl">
+                        <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80" alt="Science Laboratory" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="p-4 bg-white">
+                            <h4 class="font-bold text-slate-900">Advanced Chemistry Lab</h4>
+                            <p class="text-xs text-slate-500">STEM Department</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sports group relative rounded-2xl overflow-hidden shadow-md bg-white border border-slate-200 transition-all hover:-translate-y-1 hover:shadow-xl">
+                        <img src="https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=800&q=80" alt="Sports Field" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="p-4 bg-white">
+                            <h4 class="font-bold text-slate-900">Annual Athletics Day</h4>
+                            <p class="text-xs text-slate-500">School Stadium</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item campus group relative rounded-2xl overflow-hidden shadow-md bg-white border border-slate-200 transition-all hover:-translate-y-1 hover:shadow-xl">
+                        <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=800&q=80" alt="Library" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="p-4 bg-white">
+                            <h4 class="font-bold text-slate-900">Central Digital Library</h4>
+                            <p class="text-xs text-slate-500">Learning Resource Hub</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item class group relative rounded-2xl overflow-hidden shadow-md bg-white border border-slate-200 transition-all hover:-translate-y-1 hover:shadow-xl">
+                        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80" alt="Interactive Classroom" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="p-4 bg-white">
+                            <h4 class="font-bold text-slate-900">Interactive Lecture Room</h4>
+                            <p class="text-xs text-slate-500">Primary Block</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sports group relative rounded-2xl overflow-hidden shadow-md bg-white border border-slate-200 transition-all hover:-translate-y-1 hover:shadow-xl">
+                        <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80" alt="Music Festival" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="p-4 bg-white">
+                            <h4 class="font-bold text-slate-900">Annual Music Performance</h4>
+                            <p class="text-xs text-slate-500">Auditorium</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. CONTACT PAGE VIEW -->
+        <div id="page-contact" class="page-view hidden fade-in">
+            <div class="bg-slate-900 text-white py-12">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 class="text-4xl font-extrabold tracking-tight">Contact Us</h1>
+                    <p class="mt-2 text-slate-400 text-lg">Have questions? Reach out to our admissions or administration office.</p>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- Contact Information -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900 mb-6">Get In Touch</h2>
+                        <p class="text-slate-600 mb-8">We are available during administrative hours to answer your queries regarding enrollment, curriculum, or visiting our campus.</p>
+
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900">Campus Location</h4>
+                                    <p class="text-slate-600 text-sm">Bole Sub-City, Excellence Avenue, Addis Ababa, Ethiopia</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900">Phone & Hotline</h4>
+                                    <p class="text-slate-600 text-sm">+251 (0) 11 612 3456 / +251 (0) 91 123 4567</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900">Email Address</h4>
+                                    <p class="text-slate-600 text-sm">info@excellenceacademy.edu.et</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Form -->
+                    <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-900 mb-6">Send Us a Message</h3>
+                        <form id="contactForm" onsubmit="handleContactSubmit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Your Full Name</label>
+                                <input type="text" required placeholder="Abebe Kebede" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Email Address</label>
+                                <input type="email" required placeholder="abebe@example.com" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Subject</label>
+                                <input type="text" required placeholder="Admissions Inquiry" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Message</label>
+                                <textarea rows="4" required placeholder="Write your inquiry here..." class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition-all">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. LOGIN PAGE VIEW -->
+        <div id="page-login" class="page-view hidden fade-in my-12">
+            <div class="max-w-md mx-auto px-4">
+                <div class="bg-white rounded-3xl shadow-xl border border-slate-200 p-8">
+                    <div class="text-center mb-8">
+                        <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-blue-500/30">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-900">School Portal Sign In</h2>
+                        <p class="text-slate-500 text-sm mt-1">Enter your credentials to access the Student Management System</p>
+                    </div>
+
+                    <form onsubmit="handleLogin(event)" class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Username / ID</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-user absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                                <input type="text" id="loginUsername" value="admin" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                                <input type="password" id="loginPassword" value="password" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-sm">
+                            <label class="flex items-center text-slate-600 cursor-pointer">
+                                <input type="checkbox" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 mr-2">
+                                <span>Remember me</span>
+                            </label>
+                            <a href="#" onclick="showCustomAlert('Please contact system administrator to reset password.')" class="text-blue-600 font-semibold hover:underline">Forgot?</a>
+                        </div>
+
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                            <span>Sign In to Dashboard</span>
+                        </button>
+                    </form>
+
+                    <div class="mt-6 pt-6 border-t border-slate-100 text-center">
+                        <p class="text-xs text-slate-400">Demo Login Pre-filled (Click Sign In to open System)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. DASHBOARD PAGE VIEW (EXACT MATCH TO USER'S IMAGE) -->
+        <div id="page-dashboard" class="page-view hidden">
+            <!-- Full Width Container overriding default navbar -->
+            <div class="min-h-screen bg-[#F3F6FA] flex flex-col font-sans">
+
+                <!-- TOP BLUE NAVIGATION BAR -->
+                <header class="bg-[#1E56A0] text-white px-6 py-3.5 flex items-center justify-between shadow-sm sticky top-0 z-50">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-white/10 p-2 rounded-lg">
+                            <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                        </div>
+                        <h1 class="text-xl font-bold tracking-tight">Student Management System</h1>
+                    </div>
+
+                    <!-- Middle Search Bar -->
+                    <div class="hidden md:flex items-center flex-1 max-w-xl mx-12">
+                        <div class="relative w-full">
+                            <i class="fa-solid fa-magnifying-glass absolute left-4 top-3 text-blue-200 text-sm"></i>
+                            <input type="text" id="dashboardSearch" onkeyup="filterStudentTable()" placeholder="Search student by name or ID..." class="w-full pl-10 pr-4 py-2 bg-white/15 text-white placeholder-blue-200 rounded-full text-sm border border-white/20 focus:outline-none focus:bg-white/20 focus:border-white">
+                        </div>
+                    </div>
+
+                    <!-- User Profile & Notifications -->
+                    <div class="flex items-center space-x-5">
+                        <button class="relative p-2 text-white hover:bg-white/10 rounded-full transition-all">
+                            <i class="fa-regular fa-bell text-lg"></i>
+                            <span class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#1E56A0]">3</span>
+                        </button>
+                        <div class="flex items-center space-x-2 border-l border-white/20 pl-4">
+                            <div class="w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center text-slate-700 font-bold overflow-hidden border-2 border-white">
+                                <i class="fa-solid fa-user text-lg"></i>
+                            </div>
+                            <span class="font-semibold text-sm">Admin</span>
+                            <i class="fa-solid fa-chevron-down text-xs opacity-75"></i>
+                        </div>
+                        <button onclick="logout()" title="Logout" class="text-white/80 hover:text-white ml-2 text-sm font-medium">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </header>
+
+                <!-- MAIN DASHBOARD CONTENT AREA -->
+                <div class="flex flex-1 overflow-hidden">
+                    
+                    <!-- SIDEBAR NAVIGATION -->
+                    <aside class="w-60 bg-[#002244] text-slate-300 flex flex-col justify-between shrink-0 hidden lg:flex">
+                        <div class="py-4 px-3 space-y-1">
+                            <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-[#1D63ED] text-white font-medium text-sm transition-all shadow-sm">
+                                <i class="fa-solid fa-house w-5 text-center"></i>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="#" onclick="showCustomAlert('Navigating to Students Module')" class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 hover:text-white text-slate-300 font-medium text-sm transition-all">
+                                <i class="fa-solid fa-users w-5 text-center"></i>
+                                <span>Students</span>
+                            </a>
+                            <a href="#" onclick="showCustomAlert('Navigating to Teachers Module')" class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 hover:text-white text-slate-300 font-medium text-sm transition-all">
+                                <i class="fa-solid fa-user-tie w-5 text-center"></i>
+                                <span>Teachers</span>
+                            </a>
+                            <a href="#" onclick="showCustomAlert('Navigating to Classes Module')" class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 hover:text-white text-slate-300 font-medium text-sm transition-all">
+                                <i class="fa-solid fa-chalkboard w-5 text-center"></i>
+                                <span>Classes</span>
+                            </a>
+                            <a href="#" onclick="showCustomAlert('Navigating to Subjects Module')" class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 hover:text-white text-slate-300 font-medium text-sm transition-all">
+                                <i class="fa-solid fa-book w-5 text-center"></i>
+                                <span>Subjects</span>
+                            </a>
+                            <a href="#" onclick="showCustomAlert('Navigating to Enrollments')" class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 hover:text-white text-slate-300 font-medium text-sm transition-all">
+                                <i class="fa-solid fa-address-card w-5 text-center"></i>
+                                <span>Enrollments</span>
+                            </a>
+                            <a href="#" onclick="showCustomAlert('Navigating to Grades')" class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 hover:text-white text-slate-300 font-medium text-sm transition-all">
+                                <i class="fa-solid fa-sliders w-5 text-center"></i>
+                                <span>Grades</span>
+                            </a>
+                            <a href="#" onclick="showCustomAlert('Navigating to Reports')" class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 hover:text-white text-slate-300 font-medium text-sm transition-all">
+                                <i class="fa-solid fa-file-lines w-5 text-center"></i>
+                                <span>Reports</span>
+                            </a>
+                            <a href="#" onclick="showCustomAlert('Navigating to Settings')" class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 hover:text-white text-slate-300 font-medium text-sm transition-all">
+                                <i class="fa-solid fa-gear w-5 text-center"></i>
+                                <span>Settings</span>
+                            </a>
+                        </div>
+
+                        <!-- Sidebar Decorative Footer Badge -->
+                        <div class="p-4 m-3 bg-white/5 rounded-2xl text-center border border-white/10">
+                            <div class="w-12 h-12 mx-auto mb-2 flex items-center justify-center text-blue-400">
+                                <i class="fa-solid fa-book-bookmark text-3xl"></i>
+                            </div>
+                            <p class="text-xs font-bold text-white">Better Education</p>
+                            <p class="text-[11px] text-slate-400">Brighter Future</p>
+                        </div>
+                    </aside>
+
+                    <!-- DASHBOARD BODY CONTENT -->
+                    <main class="flex-1 overflow-y-auto p-6 space-y-6">
+
+                        <!-- Top Welcome Bar -->
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-2xl font-bold text-slate-900">Welcome to Student Management System</h2>
+                                <p class="text-slate-500 text-sm">Manage students, classes, teachers and academic records easily.</p>
+                            </div>
+                            <div class="flex items-center space-x-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 text-sm text-slate-700">
+                                <i class="fa-regular fa-calendar text-blue-600"></i>
+                                <span class="font-medium">Today</span>
+                                <span class="text-slate-400">|</span>
+                                <span id="currentDate" class="font-semibold text-slate-800">October 17, 2026</span>
+                            </div>
+                        </div>
+
+                        <!-- 4 METRIC COUNTER CARDS -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                            <!-- Card 1: Total Students -->
+                            <div class="bg-[#EFF6FF] border border-blue-100 rounded-2xl p-5 relative overflow-hidden transition-all hover:shadow-md">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 rounded-xl bg-[#2563EB] text-white flex items-center justify-center text-xl shrink-0 shadow-md shadow-blue-500/20">
+                                        <i class="fa-solid fa-user-group"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Students</span>
+                                        <div id="statTotalStudents" class="text-2xl font-bold text-slate-900 mt-0.5">124</div>
+                                    </div>
+                                </div>
+                                <button onclick="showCustomAlert('Viewing All Students')" class="mt-4 text-xs font-bold text-[#2563EB] hover:text-blue-800 flex items-center gap-1">
+                                    <span>View All</span>
+                                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </button>
+                            </div>
+
+                            <!-- Card 2: Total Teachers -->
+                            <div class="bg-[#ECFDF5] border border-emerald-100 rounded-2xl p-5 relative overflow-hidden transition-all hover:shadow-md">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 rounded-xl bg-[#10B981] text-white flex items-center justify-center text-xl shrink-0 shadow-md shadow-emerald-500/20">
+                                        <i class="fa-solid fa-chalkboard-user"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Teachers</span>
+                                        <div class="text-2xl font-bold text-slate-900 mt-0.5">12</div>
+                                    </div>
+                                </div>
+                                <button onclick="showCustomAlert('Viewing All Teachers')" class="mt-4 text-xs font-bold text-[#10B981] hover:text-emerald-800 flex items-center gap-1">
+                                    <span>View All</span>
+                                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </button>
+                            </div>
+
+                            <!-- Card 3: Total Classes -->
+                            <div class="bg-[#FFF7ED] border border-amber-100 rounded-2xl p-5 relative overflow-hidden transition-all hover:shadow-md">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 rounded-xl bg-[#F97316] text-white flex items-center justify-center text-xl shrink-0 shadow-md shadow-amber-500/20">
+                                        <i class="fa-solid fa-school"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Classes</span>
+                                        <div class="text-2xl font-bold text-slate-900 mt-0.5">6</div>
+                                    </div>
+                                </div>
+                                <button onclick="showCustomAlert('Viewing All Classes')" class="mt-4 text-xs font-bold text-[#F97316] hover:text-amber-800 flex items-center gap-1">
+                                    <span>View All</span>
+                                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </button>
+                            </div>
+
+                            <!-- Card 4: Total Subjects -->
+                            <div class="bg-[#F5F3FF] border border-purple-100 rounded-2xl p-5 relative overflow-hidden transition-all hover:shadow-md">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 rounded-xl bg-[#8B5CF6] text-white flex items-center justify-center text-xl shrink-0 shadow-md shadow-purple-500/20">
+                                        <i class="fa-solid fa-book-open"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Subjects</span>
+                                        <div class="text-2xl font-bold text-slate-900 mt-0.5">10</div>
+                                    </div>
+                                </div>
+                                <button onclick="showCustomAlert('Viewing All Subjects')" class="mt-4 text-xs font-bold text-[#8B5CF6] hover:text-purple-800 flex items-center gap-1">
+                                    <span>View All</span>
+                                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- MIDDLE SECTION: RECENT STUDENTS TABLE & RIGHT PANEL (QUICK ACTIONS & EVENTS) -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                            <!-- LEFT 2-COLUMN: RECENT STUDENTS TABLE -->
+                            <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                                <div class="flex items-center justify-between mb-5">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fa-solid fa-user-plus text-slate-700"></i>
+                                        <h3 class="font-bold text-slate-900 text-lg">Recent Students</h3>
+                                    </div>
+                                    <button onclick="showCustomAlert('Viewing all student entries')" class="text-xs font-bold text-blue-600 hover:text-blue-800">
+                                        View All Students &rarr;
+                                    </button>
+                                </div>
+
+                                <!-- Students Table -->
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse" id="studentsTable">
+                                        <thead>
+                                            <tr class="border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-50">
+                                                <th class="p-3 rounded-l-lg">#</th>
+                                                <th class="p-3">Photo</th>
+                                                <th class="p-3">Name</th>
+                                                <th class="p-3">Student ID</th>
+                                                <th class="p-3">Class</th>
+                                                <th class="p-3">Status</th>
+                                                <th class="p-3 text-center rounded-r-lg">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="studentTableBody" class="divide-y divide-slate-100 text-sm font-medium text-slate-700">
+                                            <!-- Rows rendered dynamically via Javascript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- RIGHT COLUMN: BANNER + QUICK ACTIONS + UPCOMING EVENTS -->
+                            <div class="space-y-6">
+
+                                <!-- Illustrated Educational Promo Banner -->
+                                <div class="bg-gradient-to-r from-amber-400 via-teal-400 to-cyan-500 rounded-2xl p-6 text-white relative overflow-hidden shadow-sm">
+                                    <div class="relative z-10 max-w-[60%]">
+                                        <h4 class="text-2xl font-extrabold font-serif italic drop-shadow-sm">Learn Grow Succeed</h4>
+                                    </div>
+                                    <div class="absolute right-3 bottom-2 w-28 h-28 flex items-center justify-center">
+                                        <i class="fa-solid fa-graduation-cap text-6xl text-white/90 drop-shadow-md"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Actions Grid -->
+                                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                                    <div class="flex items-center space-x-2 mb-4">
+                                        <i class="fa-solid fa-bolt text-slate-800"></i>
+                                        <h3 class="font-bold text-slate-900 text-base">Quick Actions</h3>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <button onclick="openAddStudentModal()" class="bg-[#1D63ED] hover:bg-blue-700 text-white p-4 rounded-2xl text-center shadow-sm transition-all flex flex-col items-center justify-center gap-2">
+                                            <i class="fa-solid fa-user-plus text-xl"></i>
+                                            <span class="text-xs font-semibold">Add Student</span>
+                                        </button>
+                                        <button onclick="showCustomAlert('Opening Add Teacher form')" class="bg-[#10B981] hover:bg-emerald-600 text-white p-4 rounded-2xl text-center shadow-sm transition-all flex flex-col items-center justify-center gap-2">
+                                            <i class="fa-solid fa-user-plus text-xl"></i>
+                                            <span class="text-xs font-semibold">Add Teacher</span>
+                                        </button>
+                                        <button onclick="showCustomAlert('Opening Add Class form')" class="bg-[#F97316] hover:bg-amber-600 text-white p-4 rounded-2xl text-center shadow-sm transition-all flex flex-col items-center justify-center gap-2">
+                                            <i class="fa-solid fa-chalkboard-user text-xl"></i>
+                                            <span class="text-xs font-semibold">Add Class</span>
+                                        </button>
+                                        <button onclick="showCustomAlert('Opening Add Subject form')" class="bg-[#8B5CF6] hover:bg-purple-600 text-white p-4 rounded-2xl text-center shadow-sm transition-all flex flex-col items-center justify-center gap-2">
+                                            <i class="fa-solid fa-book text-xl"></i>
+                                            <span class="text-xs font-semibold">Add Subject</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Upcoming Events Widget -->
+                                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                                    <div class="flex items-center space-x-2 mb-4">
+                                        <i class="fa-regular fa-calendar-check text-slate-800"></i>
+                                        <h3 class="font-bold text-slate-900 text-base">Upcoming Events</h3>
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="bg-white border border-slate-200 rounded-lg p-2 text-center shrink-0 w-12">
+                                                    <span class="block text-xs font-bold text-slate-800">10</span>
+                                                    <span class="block text-[10px] text-slate-400 uppercase">Oct</span>
+                                                </div>
+                                                <div>
+                                                    <h5 class="text-xs font-bold text-slate-900">Examination</h5>
+                                                    <p class="text-[11px] text-slate-500">Grade 10 - Mathematics</p>
+                                                </div>
+                                            </div>
+                                            <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="bg-white border border-slate-200 rounded-lg p-2 text-center shrink-0 w-12">
+                                                    <span class="block text-xs font-bold text-slate-800">12</span>
+                                                    <span class="block text-[10px] text-slate-400 uppercase">Oct</span>
+                                                </div>
+                                                <div>
+                                                    <h5 class="text-xs font-bold text-slate-900">Parent Meeting</h5>
+                                                    <p class="text-[11px] text-slate-500">All Classes</p>
+                                                </div>
+                                            </div>
+                                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="bg-white border border-slate-200 rounded-lg p-2 text-center shrink-0 w-12">
+                                                    <span class="block text-xs font-bold text-slate-800">15</span>
+                                                    <span class="block text-[10px] text-slate-400 uppercase">Oct</span>
+                                                </div>
+                                                <div>
+                                                    <h5 class="text-xs font-bold text-slate-900">Result Publication</h5>
+                                                    <p class="text-[11px] text-slate-500">Term 1</p>
+                                                </div>
+                                            </div>
+                                            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- BOTTOM SECTION: GRAPH CHART + SYSTEM OVERVIEW STATS -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                            <!-- Bar Chart: Student Distribution by Class -->
+                            <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                                <div class="flex items-center space-x-2 mb-4">
+                                    <i class="fa-solid fa-chart-column text-slate-700"></i>
+                                    <h3 class="font-bold text-slate-900 text-base">Student Distribution by Class</h3>
+                                </div>
+                                <div class="h-64 relative">
+                                    <canvas id="distributionChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- System Overview Stat List -->
+                            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center space-x-2 mb-6">
+                                        <i class="fa-solid fa-circle-info text-slate-700"></i>
+                                        <h3 class="font-bold text-slate-900 text-base">System Overview</h3>
+                                    </div>
+
+                                    <div class="space-y-4 text-sm font-medium">
+                                        <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                                            <span class="text-slate-600">Total Students</span>
+                                            <span class="font-bold text-slate-900">124</span>
+                                        </div>
+                                        <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                                            <span class="text-slate-600">Total Teachers</span>
+                                            <span class="font-bold text-slate-900">12</span>
+                                        </div>
+                                        <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                                            <span class="text-slate-600">Total Classes</span>
+                                            <span class="font-bold text-slate-900">6</span>
+                                        </div>
+                                        <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                                            <span class="text-slate-600">Total Subjects</span>
+                                            <span class="font-bold text-slate-900">10</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-6 pt-4 border-t border-slate-100 text-center">
+                                    <span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                                        <i class="fa-solid fa-circle-check mr-1"></i> System Online & Operational
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </main>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- PUBLIC FOOTER (Hidden when in Dashboard view) -->
+    <footer id="public-footer" class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 text-white font-bold text-lg mb-4">
+                        <i class="fa-solid fa-graduation-cap text-blue-500"></i>
+                        <span>Excellence Academy</span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">Dedicated to fostering academic rigor, moral integrity, and social responsibility in leaders of tomorrow.</p>
+                </div>
+                <div>
+                    <h5 class="text-white font-semibold text-sm mb-3">Quick Navigation</h5>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="#" onclick="navigateTo('home')" class="hover:text-white">Home</a></li>
+                        <li><a href="#" onclick="navigateTo('about')" class="hover:text-white">About Us</a></li>
+                        <li><a href="#" onclick="navigateTo('gallery')" class="hover:text-white">Campus Gallery</a></li>
+                        <li><a href="#" onclick="navigateTo('contact')" class="hover:text-white">Contact & Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-white font-semibold text-sm mb-3">Academics</h5>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="#" class="hover:text-white">Primary Education</a></li>
+                        <li><a href="#" class="hover:text-white">Middle & High School</a></li>
+                        <li><a href="#" class="hover:text-white">STEM & Robotics Programs</a></li>
+                        <li><a href="#" class="hover:text-white">Extracurricular Activities</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-white font-semibold text-sm mb-3">Connect With Us</h5>
+                    <div class="flex space-x-3 mb-4">
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-blue-600 hover:text-white transition-all"><i class="fa-brands fa-facebook-f text-xs"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-sky-500 hover:text-white transition-all"><i class="fa-brands fa-twitter text-xs"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-pink-600 hover:text-white transition-all"><i class="fa-brands fa-instagram text-xs"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-red-600 hover:text-white transition-all"><i class="fa-brands fa-youtube text-xs"></i></a>
+                    </div>
+                    <p class="text-xs text-slate-500">&copy; 2026 Excellence Academy. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ADD STUDENT MODAL -->
+    <div id="addStudentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 fade-in">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-lg font-bold text-slate-900">Add New Student</h3>
+                <button onclick="closeAddStudentModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form onsubmit="handleAddStudent(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
+                    <input type="text" id="newStudentName" required placeholder="e.g. Almaz Bekele" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Class Grade</label>
+                    <select id="newStudentGrade" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 text-sm outline-none">
+                        <option value="Grade 5">Grade 5</option>
+                        <option value="Grade 6">Grade 6</option>
+                        <option value="Grade 7">Grade 7</option>
+                        <option value="Grade 8">Grade 8</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Avatar Gender Style</label>
+                    <select id="newStudentGender" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 text-sm outline-none">
+                        <option value="male">Male Student Avatar</option>
+                        <option value="female">Female Student Avatar</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 pt-3">
+                    <button type="button" onclick="closeAddStudentModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Cancel</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-md">Add Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION MODAL ALERTS -->
+    <div id="customAlert" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl flex items-center space-x-3 hidden fade-in">
+        <i class="fa-solid fa-circle-info text-blue-400 text-lg"></i>
+        <span id="alertMessage" class="text-sm font-medium"></span>
+    </div>
+
+    <script>
+        // Data State for Recent Students
+        let studentsData = [
+            { id: 1, name: "Abebe Kebede", studentId: "ST001", classGrade: "Grade 5", status: "Active", photo: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80" },
+            { id: 2, name: "Selamawit Alemu", studentId: "ST002", classGrade: "Grade 6", status: "Active", photo: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80" },
+            { id: 3, name: "Mekonnen Tadesse", studentId: "ST003", classGrade: "Grade 7", status: "Active", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" },
+            { id: 4, name: "Hiwet Tesfaye", studentId: "ST004", classGrade: "Grade 8", status: "Active", photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" },
+            { id: 5, name: "Yared Girma", studentId: "ST005", classGrade: "Grade 5", status: "Active", photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80" }
+        ];
+
+        let distributionChartInstance = null;
+
+        // Navigation Controller
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page-view').forEach(el => el.classList.add('hidden'));
+            
+            const target = document.getElementById('page-' + pageId);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+
+            const publicHeader = document.getElementById('public-header');
+            const publicFooter = document.getElementById('public-footer');
+
+            if (pageId === 'dashboard') {
+                publicHeader.classList.add('hidden');
+                publicFooter.classList.add('hidden');
+                renderStudentTable();
+                initChart();
+            } else {
+                publicHeader.classList.remove('hidden');
+                publicFooter.classList.remove('hidden');
+            }
+
+            // Update active navbar state
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-blue-600', 'bg-blue-50');
+                btn.classList.add('text-slate-600');
+            });
+            const activeBtn = document.getElementById('nav-' + pageId);
+            if (activeBtn) {
+                activeBtn.classList.add('text-blue-600', 'bg-blue-50');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Toggle Video Play on Home Page
+        function toggleVideoPlay() {
+            const video = document.getElementById('promoVideo');
+            const overlay = document.getElementById('videoOverlay');
+            const icon = document.getElementById('playIcon');
+
+            if (video.paused) {
+                video.play();
+                icon.classList.remove('fa-play');
+                icon.classList.add('fa-pause');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            } else {
+                video.pause();
+                icon.classList.remove('fa-pause');
+                icon.classList.add('fa-play');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        // Gallery Filter
+        function filterGallery(category) {
+            const items = document.querySelectorAll('.gallery-item');
+            const buttons = document.querySelectorAll('.gallery-filter-btn');
+
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-white', 'text-slate-700');
+            });
+
+            event.target.classList.remove('bg-white', 'text-slate-700');
+            event.target.classList.add('bg-blue-600', 'text-white');
+
+            items.forEach(item => {
+                if (category === 'all' || item.classList.contains(category)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Render Student Table Rows
+        function renderStudentTable(data = studentsData) {
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '';
+
+            data.forEach((student, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition-colors';
+                tr.innerHTML = `
+                    <td class="p-3 text-slate-500 font-medium">${index + 1}</td>
+                    <td class="p-3">
+                        <img src="${student.photo}" alt="${student.name}" class="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-sm">
+                    </td>
+                    <td class="p-3 font-semibold text-slate-900">${student.name}</td>
+                    <td class="p-3 text-slate-500 text-xs font-mono">${student.studentId}</td>
+                    <td class="p-3 text-slate-600">${student.classGrade}</td>
+                    <td class="p-3">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+                            ${student.status}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center space-x-1.5">
+                            <button onclick="viewStudent('${student.name}')" class="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-all" title="View Details">
+                                <i class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                            <button onclick="editStudent('${student.name}')" class="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-all" title="Edit Student">
+                                <i class="fa-solid fa-pen-to-square text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('statTotalStudents').innerText = studentsData.length;
+        }
+
+        // Filter Student Table Search
+        function filterStudentTable() {
+            const query = document.getElementById('dashboardSearch').value.toLowerCase();
+            const filtered = studentsData.filter(s => 
+                s.name.toLowerCase().includes(query) || 
+                s.studentId.toLowerCase().includes(query)
+            );
+            renderStudentTable(filtered);
+        }
+
+        // Chart Initialization
+        function initChart() {
+            const ctx = document.getElementById('distributionChart').getContext('2d');
+            if (distributionChartInstance) {
+                distributionChartInstance.destroy();
+            }
+
+            distributionChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10'],
+                    datasets: [{
+                        label: 'Students',
+                        data: [28, 24, 22, 18, 16, 16],
+                        backgroundColor: [
+                            '#2563EB',
+                            '#10B981',
+                            '#F97316',
+                            '#8B5CF6',
+                            '#EF4444',
+                            '#06B6D4'
+                        ],
+                        borderRadius: 8,
+                        barThickness: 28
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 40,
+                            grid: { color: '#f1f5f9' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Action Modals & Handlers
+        function openAddStudentModal() {
+            document.getElementById('addStudentModal').classList.remove('hidden');
+        }
+
+        function closeAddStudentModal() {
+            document.getElementById('addStudentModal').classList.add('hidden');
+        }
+
+        function handleAddStudent(e) {
+            e.preventDefault();
+            const name = document.getElementById('newStudentName').value;
+            const grade = document.getElementById('newStudentGrade').value;
+            const gender = document.getElementById('newStudentGender').value;
+
+            const photoUrl = gender === 'female' 
+                ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
+                : 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80';
+
+            const newStudent = {
+                id: studentsData.length + 1,
+                name: name,
+                studentId: 'ST00' + (studentsData.length + 1),
+                classGrade: grade,
+                status: 'Active',
+                photo: photoUrl
+            };
+
+            studentsData.unshift(newStudent);
+            renderStudentTable();
+            closeAddStudentModal();
+            showCustomAlert('New student ' + name + ' added successfully!');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            showCustomAlert('Signing in to Portal...');
+            setTimeout(() => {
+                navigateTo('dashboard');
+            }, 500);
+        }
+
+        function logout() {
+            showCustomAlert('Logged out of system successfully');
+            navigateTo('home');
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            showCustomAlert('Thank you! Your message has been sent successfully.');
+            document.getElementById('contactForm').reset();
+        }
+
+        function viewStudent(name) {
+            showCustomAlert('Viewing full academic profile for ' + name);
+        }
+
+        function editStudent(name) {
+            showCustomAlert('Opening editor for ' + name);
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function showCustomAlert(msg) {
+            const alertBox = document.getElementById('customAlert');
+            document.getElementById('alertMessage').innerText = msg;
+            alertBox.classList.remove('hidden');
+            setTimeout(() => {
+                alertBox.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Initial Load setup
+        window.onload = function() {
+            navigateTo('home');
+        };
+    </script>
+</body>
+</html>
